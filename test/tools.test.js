@@ -40,3 +40,19 @@ test('box accepts coordinates sent as numeric strings or decimals, rounding them
   assert.deepEqual(box({ x: '-40', y: 64.4, z: 2.6 }, { x: -38, y: '66', z: 3 }), { x1: -40, y1: 64, z1: 3, x2: -38, y2: 66, z2: 3 });
   assert.throws(() => box({ x: 'abc', y: 0, z: 0 }, { x: 1, y: 1, z: 1 }), /numbers/);
 });
+
+test('read tools round coordinates before asking the add-on', async () => {
+  const { makeTools, callTool } = await import('../src/tools.js');
+  const sent = [];
+  const addon = { request: async (op, args) => (sent.push([op, args]), { origin: { x: 0, z: 0 }, width: 1, depth: 1, heights: [[64]], surface: [[0]], palette: ['minecraft:grass_block'] }) };
+  const tools = makeTools({ run: async () => ({}) }, addon);
+  await callTool(tools, 'inspect_area', { from: { x: 1.4, y: '64', z: 2.6 }, to: { x: 3, y: 65, z: 4 } });
+  await callTool(tools, 'survey_terrain', { from: { x: -1.6, z: '2' }, to: { x: 3, z: 4.2 } });
+  assert.deepEqual(sent[0][1].from, { x: 1, y: 64, z: 3 });
+  assert.deepEqual(sent[1][1], { from: { x: -2, z: 2 }, to: { x: 3, z: 4 } });
+});
+
+test('a bad coordinate error shows the value that was sent', () => {
+  assert.throws(() => box({ x: '-170+5', y: 64, z: 0 }, { x: 1, y: 65, z: 1 }), /x was "-170\+5"/);
+  assert.throws(() => box({ y: 64, z: 0 }, { x: 1, y: 65, z: 1 }), /x is missing/);
+});

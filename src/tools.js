@@ -5,16 +5,22 @@ import { findSite } from './terrain.js';
 const MAX_BUILD_VOLUME = 1_000_000; // ponytail: flat cap; per-request budget if builds get bigger
 const MIN_Y = -64, MAX_Y = 319;
 
+// Models sometimes send "12" or 12.5: accept any finite number and round it to a block.
+function blockPos(p, axes) {
+  const out = {};
+  for (const k of axes) {
+    const n = Number(p?.[k]);
+    if (p?.[k] === undefined) throw new Error(`coordinates must be numbers: ${k} is missing`);
+    if (p[k] === '' || p[k] === null || !Number.isFinite(n)) throw new Error(`coordinates must be plain numbers: ${k} was ${JSON.stringify(p[k])}`);
+    out[k] = Math.round(n);
+  }
+  return out;
+}
+
 // Normalises two corners into {x1..z2} with x1<=x2 etc.
 export function box(from, to) {
-  // Models sometimes send "12" or 12.5: accept any finite number and round it to a block.
-  const num = (p, k) => {
-    const n = Number(p?.[k]);
-    if (p?.[k] === '' || p?.[k] === null || !Number.isFinite(n)) throw new Error(`coordinates must be numbers (${k})`);
-    return Math.round(n);
-  };
-  from = { x: num(from, 'x'), y: num(from, 'y'), z: num(from, 'z') };
-  to = { x: num(to, 'x'), y: num(to, 'y'), z: num(to, 'z') };
+  from = blockPos(from, 'xyz');
+  to = blockPos(to, 'xyz');
   const b = {
     x1: Math.min(from.x, to.x), y1: Math.min(from.y, to.y), z1: Math.min(from.z, to.z),
     x2: Math.max(from.x, to.x), y2: Math.max(from.y, to.y), z2: Math.max(from.z, to.z),
@@ -93,7 +99,7 @@ export function makeTools(game, addon) {
         '(one layer per y, rows north to south, letters west to east) with a legend: use thin slices to check walls, roofs and stairs.',
       inputSchema: { type: 'object', properties: { from: point, to: point, layout: { type: 'boolean' } }, required: ['from', 'to'] },
       async run({ from, to, layout = false }) {
-        return addon.request('inspect', { from, to, layout });
+        return addon.request('inspect', { from: blockPos(from, 'xyz'), to: blockPos(to, 'xyz'), layout });
       },
     },
     {
@@ -111,7 +117,7 @@ export function makeTools(game, addon) {
         required: ['from', 'to'],
       },
       async run({ from, to, site }) {
-        const survey = await addon.request('heights', { from, to });
+        const survey = await addon.request('heights', { from: blockPos(from, 'xz'), to: blockPos(to, 'xz') });
         if (!site) return survey;
         return { ...survey, site: findSite(survey, site.width, site.depth) ?? 'no dry, loaded spot that size in this area' };
       },

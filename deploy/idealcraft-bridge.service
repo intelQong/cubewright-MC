@@ -1,0 +1,27 @@
+# deploy/idealcraft-bridge.service
+[Unit]
+Description=IdealCraft AI bridge (Minecraft Bedrock)
+After=network-online.target wg-quick@wg0.service
+Wants=network-online.target
+
+[Service]
+User=idealcraft
+Group=idealcraft
+WorkingDirectory=/srv/idealcraft
+EnvironmentFile=/etc/idealcraft.env
+ExecStart=/srv/idealcraft/bin/node src/index.js
+Restart=on-failure
+RestartSec=5
+ProtectHome=true
+ProtectSystem=strict
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+
+[Install]
+WantedBy=multi-user.target

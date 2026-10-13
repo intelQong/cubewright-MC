@@ -52,3 +52,15 @@ test('rejectAll fails pending requests at once', async () => {
   ch.rejectAll(new Error('game disconnected'));
   await assert.rejects(p, /game disconnected/);
 });
+
+test('a game that acknowledges after the timeout leaves no unhandled rejection', async () => {
+  const unhandled = [];
+  const onUnhandled = (err) => unhandled.push(err);
+  process.on('unhandledRejection', onUnhandled);
+  const slowGame = { run: () => new Promise((_, reject) => setTimeout(() => reject(new Error('timed out: scriptevent')), 100)) };
+  const ch = new AddonChannel(slowGame, 50);
+  await assert.rejects(ch.request('info'), /did not answer/);
+  await new Promise((r) => setTimeout(r, 20));
+  process.off('unhandledRejection', onUnhandled);
+  assert.deepEqual(unhandled.map(String), []);
+});

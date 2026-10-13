@@ -33,7 +33,10 @@ system.afterEvents.scriptEventReceive.subscribe((e) => {
     const op = e.id.slice('idealcraft:'.length);
     if (op === 'info') payload = info(player);
     else if (op === 'inspect') payload = inspect(view, args);
-    else if (op === 'heights') payload = heights(view, { top: feet + 40, bottom: feet - 40, ...args });
+    else if (op === 'heights') {
+      const { min, max } = dim.heightRange;
+      payload = heights(view, { top: feet + 40, bottom: feet - 40, ...args, minY: min, maxY: max - 1 });
+    }
     else payload = { error: `unknown op ${op}` };
   } catch (err) {
     payload = { error: String(err?.message ?? err) };

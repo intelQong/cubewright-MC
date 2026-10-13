@@ -46,11 +46,14 @@ export function inspect(world, { from, to, layout = false }) {
   return layout ? { box, counts, legend, layers, note: 'rows run north to south (z), letters west to east (x); . air, ? unloaded' } : { box, counts };
 }
 
-export function heights(world, { from, to, top, bottom }) {
+// minY/maxY: the world's build range; the scan is clamped to it (getBlock fails outside it).
+export function heights(world, { from, to, top, bottom, minY = -Infinity, maxY = Infinity }) {
   const [x1, x2] = span(from.x, to.x), [z1, z2] = span(from.z, to.z);
   const width = x2 - x1 + 1, depth = z2 - z1 + 1;
   if (width > MAX_SIDE || depth > MAX_SIDE) return { error: `area is ${width}x${depth}; survey at most ${MAX_SIDE}x${MAX_SIDE}` };
   if (!Number.isInteger(top) || !Number.isInteger(bottom)) return { error: 'top and bottom must be integers' };
+  top = Math.min(top, maxY);
+  bottom = Math.max(bottom, minY);
   if (top - bottom > MAX_SCAN) return { error: `scan range is ${top - bottom} blocks; at most ${MAX_SCAN}` };
   const palette = [], index = {};
   const heightsRows = [], surfaceRows = [];

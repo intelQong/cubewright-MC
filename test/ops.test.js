@@ -67,3 +67,10 @@ test('heights refuses a scan range taller than 128 blocks or non-integer', () =>
   assert.match(heights(world, { ...area, top: 100000, bottom: -100000 }).error, /128/);
   assert.match(heights(world, { ...area, top: 'x', bottom: 0 }).error, /integers/);
 });
+
+test('heights clamps the scan to the world height range', () => {
+  // Like the real game: getBlock throws (blockAt -> undefined) above the build limit.
+  const capped = { blockAt: (x, y, z) => (y > 70 ? undefined : world.blockAt(x, y, z)) };
+  const r = heights(capped, { from: { x: 0, z: 0 }, to: { x: 0, z: 0 }, top: 100, bottom: 50, minY: -64, maxY: 70 });
+  assert.equal(r.heights[0][0], 64);
+});

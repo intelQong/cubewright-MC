@@ -25,6 +25,8 @@ export class AddonChannel {
       }, this.timeoutMs);
       this.pending.set(id, { parts: new Map(), resolve, reject, timer });
     });
+    // The timer may fire while game.run is still awaited; without a handler that rejection would crash Node.
+    reply.catch(() => {});
     try {
       await this.game.run(`scriptevent idealcraft:${op} ${id} ${JSON.stringify(args)}`);
     } catch (err) {

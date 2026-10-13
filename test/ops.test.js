@@ -61,3 +61,9 @@ test('heights finds the ground under plants, flags water, null when unloaded', (
 test('heights refuses areas over 64x64', () => {
   assert.match(heights(world, { from: { x: 0, z: 0 }, to: { x: 64, z: 0 }, top: 80, bottom: 50 }).error, /64/);
 });
+
+test('heights refuses a scan range taller than 128 blocks or non-integer', () => {
+  const area = { from: { x: 0, z: 0 }, to: { x: 1, z: 1 } };
+  assert.match(heights(world, { ...area, top: 100000, bottom: -100000 }).error, /128/);
+  assert.match(heights(world, { ...area, top: 'x', bottom: 0 }).error, /integers/);
+});

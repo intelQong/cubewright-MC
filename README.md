@@ -2,6 +2,17 @@
 
 **Type a sentence in Minecraft chat. An AI builds it in front of you.**
 
+![Platform](https://img.shields.io/badge/Minecraft-Bedrock%20Edition-3c8527) ![iOS](https://img.shields.io/badge/works%20on-iPhone-black) ![Node](https://img.shields.io/badge/node-%E2%89%A520-339933) ![AI](https://img.shields.io/badge/AI-any%20OpenAI--compatible%20%7C%20MCP-6f42c1) ![Tests](https://img.shields.io/badge/tests-30%20passing-brightgreen)
+
+**Highlights**
+
+- Natural-language building in your own Bedrock world, including iPhone and other mobile devices
+- Provider-agnostic: OpenRouter, Gemini, OpenAI, Anthropic, Groq, Ollama, or any MCP agent, with automatic model fallback
+- World-aware: a lightweight add-on lets the AI read terrain and blocks before it builds
+- Safe by design: exact undo, owner-only control, token-protected connection, sandboxed service
+
+**Contents:** [For players](#for-players) · [For developers](#for-developers) · [Settings](#settings) · [Security notes](#security-notes) · [Roadmap](#roadmap)
+
 ```
 !ai build a small cottage with a garden
 ```
@@ -25,7 +36,7 @@ You can use almost any AI, including free ones.
 
 Your phone and the computer must be on the **same Wi-Fi**. (Using a cloud server instead? See *Running on a Linux server* in the developer section.)
 
-## Set it up (once, about 10 minutes)
+## Installation (one-time, about 10 minutes)
 
 **On the computer**, open a terminal and paste these lines one by one:
 
@@ -67,7 +78,7 @@ on Windows: `ipconfig`) and your password:
 
 You will see *Cubewright connected*.
 
-**4. Build!**
+**4. Start building.**
 
 | Type in chat | What happens |
 |---|---|
@@ -77,7 +88,7 @@ You will see *Cubewright connected*.
 | `!ai undo` | Puts back exactly what was there before the last build step |
 | `!ai reset` | Starts a fresh conversation |
 
-## Good to know
+## Usage notes
 
 - **Switching apps disconnects the game** (on iPhone). When you come back, type the `/connect` line again.
 - **Free AI models can be slow or busy.** If nothing happens, wait a minute and try again.
@@ -85,7 +96,7 @@ You will see *Cubewright connected*.
 - **Back up worlds you care about.** Builds can be undone, but other commands the AI runs (like changing the time) cannot.
 - **Keep your AI key private.** Never post it in chats or screenshots.
 
-## Something not working?
+## Troubleshooting
 
 | Problem | Fix |
 |---|---|

@@ -46,9 +46,10 @@ game.onChat = async (sender, message, type, receiver) => {
   if (sender !== owner) return;
   const text = m[1].trim();
   if (text === 'undo') return game.say((await callTool(tools, 'undo')).text);
+  if (text === 'stop') return busy ? (agent?.stop(), game.say('Stopping after the current step...')) : game.say('Nothing is running.');
   if (!agent) return game.say('§cNo AI_MODEL set on the bridge. Use an MCP agent, or restart the bridge with AI_MODEL.');
   if (text === 'reset') return agent.reset(), game.say('Conversation cleared.');
-  if (!text) return game.say('Usage: !ai <what to build> | !ai undo | !ai reset');
+  if (!text) return game.say('Usage: !ai <what to build> | !ai stop | !ai undo | !ai reset');
   if (busy) return game.say('§eStill working on the last request.');
 
   busy = true;

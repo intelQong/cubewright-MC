@@ -73,6 +73,7 @@ You will see *Cubewright connected*.
 |---|---|
 | `!ai build a stone tower` | The AI builds it in front of you |
 | `!ai make it taller` | It remembers what you asked before |
+| `!ai stop` | Stops the AI after its current step |
 | `!ai undo` | Puts back exactly what was there before the last build step |
 | `!ai reset` | Starts a fresh conversation |
 

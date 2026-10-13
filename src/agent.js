@@ -21,14 +21,22 @@ export function makeAgent({ baseUrl, apiKey, model }, tools) {
   let stopped = false;
   const toolSpecs = tools.map((t) => ({ type: 'function', function: { name: t.name, description: t.description, parameters: t.inputSchema } }));
 
+  // model may be a list ("a,b"): each step tries them in order, moving on when one is overloaded or rate-limited.
+  const models = String(model).split(',').map((m) => m.trim()).filter(Boolean);
+
   async function complete(messages) {
-    const res = await fetch(`${baseUrl.replace(/\/$/, '')}/chat/completions`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json', ...(apiKey && { authorization: `Bearer ${apiKey}` }) },
-      body: JSON.stringify({ model, messages, tools: toolSpecs }),
-    });
-    if (!res.ok) throw new Error(`AI API ${res.status}: ${(await res.text()).slice(0, 300)}`);
-    return (await res.json()).choices[0].message;
+    let lastError;
+    for (const m of models) {
+      const res = await fetch(`${baseUrl.replace(/\/$/, '')}/chat/completions`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', ...(apiKey && { authorization: `Bearer ${apiKey}` }) },
+        body: JSON.stringify({ model: m, messages, tools: toolSpecs }),
+      });
+      if (res.ok) return (await res.json()).choices[0].message;
+      lastError = new Error(`AI API ${res.status}: ${(await res.text()).slice(0, 300)}`);
+      if (res.status !== 429 && res.status !== 503) throw lastError;
+    }
+    throw lastError;
   }
 
   return {

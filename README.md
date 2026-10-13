@@ -166,7 +166,7 @@ Without the add-on the bridge still builds, but the AI is nearly blind: `player_
 | `WS_PORT` | `8000` | Port for `/connect` |
 | `BRIDGE_TOKEN` | *(none)* | Secret at the end of the `/connect` address. Required unless `WS_HOST` is localhost |
 | `MCP_PORT` | `8001` | MCP endpoint port (always localhost) |
-| `AI_MODEL` | *(none)* | Model for `!ai`. Unset = `!ai` off, MCP agents only |
+| `AI_MODEL` | *(none)* | Model for `!ai`, or a fallback list like `gemini-3.8-flash,gemini-flash-lite-latest` (each step moves to the next model when one is overloaded or rate-limited). Unset = `!ai` off, MCP agents only |
 | `AI_BASE_URL` | OpenAI | OpenAI-compatible API base URL |
 | `AI_API_KEY` | *(none)* | API key for that provider |
 | `PLAYER` | player who ran `/connect` | Gamertag allowed to use `!ai` |

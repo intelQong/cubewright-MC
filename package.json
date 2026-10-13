@@ -1,0 +1,17 @@
+{
+  "name": "idealcraft-ai",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "AI builder for Minecraft Bedrock: any MCP agent or OpenAI-compatible model builds in your world",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "ws": "^8.22.0"
+  }
+}

@@ -8,7 +8,7 @@ mkdir -p /srv/idealcraft/bin
 cp -r src package.json /srv/idealcraft/
 cp -r addon /srv/idealcraft/        # src/addon.js imports addon/scripts/protocol.js
 cp -r node_modules /srv/idealcraft/
-cp "$NODE_BIN" /srv/idealcraft/bin/node
+cp "$NODE_BIN" /srv/idealcraft/bin/node.new && mv -f /srv/idealcraft/bin/node.new /srv/idealcraft/bin/node  # mv: works while the service runs it
 chown -R root:root /srv/idealcraft && chmod -R go-w /srv/idealcraft
 if [ ! -f /etc/idealcraft.env ]; then
   umask 077

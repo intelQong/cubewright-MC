@@ -82,6 +82,6 @@ export class Bedrock {
     const { header = {}, body = {} } = msg;
     if (header.messagePurpose === 'commandResponse') this.#settle(header.requestId, body);
     else if (header.messagePurpose === 'error') this.#settle(header.requestId, null, new Error(body.statusMessage || 'error'));
-    else if (header.eventName === 'PlayerMessage') this.onChat(body.sender, body.message, body.type);
+    else if (header.eventName === 'PlayerMessage') this.onChat(body.sender, body.message, body.type, body.receiver);
   }
 }

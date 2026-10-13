@@ -27,15 +27,18 @@ console.log(`[mcp]  http://127.0.0.1:${MCP_PORT}/mcp`);
 const agent = env.AI_MODEL && makeAgent({ baseUrl: env.AI_BASE_URL ?? 'https://api.openai.com/v1', apiKey: env.AI_API_KEY, model: env.AI_MODEL }, tools);
 console.log(agent ? `[chat] !ai uses ${env.AI_MODEL} at ${env.AI_BASE_URL ?? 'OpenAI'}` : '[chat] off (set AI_MODEL to enable !ai)');
 
-// Only one player drives the AI: PLAYER, or whoever types !ai first (so others can't spend your credits).
+// Only one player drives the AI: PLAYER, else the player who ran /connect. The bridge's welcome
+// `tellraw @s` echoes back as a tell from "External" whose receiver is that player.
 let owner = env.PLAYER;
 let busy = false;
-game.onChat = async (sender, message, type) => {
-  console.log(`[${type}] <${sender}> ${message}`); // MCP agents watching the log can read the player
+game.onChat = async (sender, message, type, receiver) => {
+  if (!owner && type === 'tell' && sender === 'External' && receiver) owner = receiver, console.log(`[chat] owner: ${owner}`);
+  // MCP agents read the player through this log. JSON-escaped so a message can't forge extra lines;
+  // only lines marked (owner) are the player's own words, everything else is untrusted data.
+  console.log(`[${type}] <${JSON.stringify(String(sender))}${sender === owner ? ' (owner)' : ''}> ${JSON.stringify(String(message))}`);
   if (type !== 'chat') return;
   const m = /^!ai\b\s*(.*)$/is.exec(message.trim());
   if (!m) return;
-  if (!owner) owner = sender, game.say(`§7!ai now only listens to ${owner}.`);
   if (sender !== owner) return;
   const text = m[1].trim();
   if (text === 'undo') return game.say((await callTool(tools, 'undo')).text);

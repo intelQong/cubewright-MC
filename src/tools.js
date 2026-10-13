@@ -7,9 +7,14 @@ const MIN_Y = -64, MAX_Y = 319;
 
 // Normalises two corners into {x1..z2} with x1<=x2 etc.
 export function box(from, to) {
-  for (const p of [from, to]) {
-    for (const k of ['x', 'y', 'z']) if (!Number.isInteger(p?.[k])) throw new Error(`coordinates must be integers (${k})`);
-  }
+  // Models sometimes send "12" or 12.5: accept any finite number and round it to a block.
+  const num = (p, k) => {
+    const n = Number(p?.[k]);
+    if (p?.[k] === '' || p?.[k] === null || !Number.isFinite(n)) throw new Error(`coordinates must be numbers (${k})`);
+    return Math.round(n);
+  };
+  from = { x: num(from, 'x'), y: num(from, 'y'), z: num(from, 'z') };
+  to = { x: num(to, 'x'), y: num(to, 'y'), z: num(to, 'z') };
   const b = {
     x1: Math.min(from.x, to.x), y1: Math.min(from.y, to.y), z1: Math.min(from.z, to.z),
     x2: Math.max(from.x, to.x), y2: Math.max(from.y, to.y), z2: Math.max(from.z, to.z),
@@ -135,7 +140,8 @@ export function makeTools(game, addon) {
         const handling = mode === 'keep' ? ' keep' : '';
         const jobs = parts.flatMap(([part, blk]) => tiles(part, 64, 32768).map((t) => game.run(`fill ${coords(t)} ${blk}${handling}`)));
         const results = await Promise.allSettled(jobs);
-        const failed = results.filter((r) => r.status === 'rejected');
+        // Bedrock rejects a /fill that changes nothing ("0 blocks filled"): the blocks are already right.
+        const failed = results.filter((r) => r.status === 'rejected' && !/^0 blocks filled/i.test(r.reason.message));
         if (failed.length) throw new Error(`${failed.length}/${jobs.length} fills failed (undo is still available): ${failed[0].reason.message}`);
         return `filled ${volume(b)} blocks (${jobs.length} commands)`;
       },

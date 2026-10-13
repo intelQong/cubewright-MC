@@ -29,3 +29,10 @@ test('never builds on water or unloaded ground', () => {
   assert.deepEqual(findSite(s, 1, 2), { x: 11, z: 20, y: 65, unevenness: 0 });
   assert.equal(findSite(survey([[null]]), 1, 1), null);
 });
+
+test('rejects footprint sizes that are not integers from 1 to 64', () => {
+  const s = survey([[64, 64], [64, 64]]);
+  for (const [w, d] of [[0, 1], [1, -3], [1.5, 1], [1e9, 1], [1, NaN]]) {
+    assert.throws(() => findSite(s, w, d), /1 to 64/, `${w}x${d}`);
+  }
+});

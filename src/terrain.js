@@ -1,6 +1,9 @@
 // src/terrain.js
 // ponytail: brute force over every footprint position, O(W*D*w*d) and fine for 64x64; prefix min/max if it gets slow.
 export function findSite(survey, width, depth) {
+  for (const n of [width, depth]) {
+    if (!Number.isInteger(n) || n < 1 || n > 64) throw new Error('site width and depth must be integers from 1 to 64');
+  }
   const water = new Set(survey.palette.flatMap((id, i) => (/water|lava/.test(id) ? [i] : [])));
   let best = null;
   for (let z0 = 0; z0 + depth <= survey.depth; z0++) {

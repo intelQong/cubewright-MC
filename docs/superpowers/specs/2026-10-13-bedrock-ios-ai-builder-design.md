@@ -31,6 +31,10 @@ Reference: CRAFT AI 0.13.3 (Java-only, Claude-only, All-Rights-Reserved). Its de
   `runCommand("tellraw @a ...")` arrives as `type: "tell"`, sender `"Script Engine"`;
   `say` also arrives; `player.sendMessage` does **not**.
 - `@minecraft/server` 1.11.0 runs; 2.0.0 did not load on this device.
+- Add-on v0.1.1 on the iPhone (tested 2026-10-13): `info` about 0.3 s; `inspect` of a thin slice about 0.3 s;
+  `heights` over 32×32 in about 1.5 s as about 6 reply lines of 1000 characters, no columns lost. Biome is not available
+  in `@minecraft/server` 1.11.0, so `info` has none.
+- OpenCode Zen's free models (Big Pickle) refuse API calls from outside the OpenCode app (`FreeTierError`).
 - iOS suspends Minecraft when the player switches apps, which drops the `/connect` socket;
   the player must re-run `/connect` after coming back. All interaction should therefore stay in game chat.
 

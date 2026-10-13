@@ -2,6 +2,7 @@ import { Bedrock } from './bedrock.js';
 import { makeTools, callTool } from './tools.js';
 import { makeAgent } from './agent.js';
 import { serveMcp } from './mcp.js';
+import { AddonChannel } from './addon.js';
 
 const env = process.env;
 const WS_PORT = Number(env.WS_PORT ?? 8000);
@@ -9,7 +10,9 @@ const WS_HOST = env.WS_HOST ?? '127.0.0.1'; // set 0.0.0.0 when Minecraft runs o
 const MCP_PORT = Number(env.MCP_PORT ?? 8001);
 
 const game = new Bedrock();
-const tools = makeTools(game);
+const addon = new AddonChannel(game);
+game.onDisconnect = () => addon.rejectAll(new Error('game disconnected'));
+const tools = makeTools(game, addon);
 
 const TOKEN = env.BRIDGE_TOKEN ?? '';
 const local = WS_HOST === '127.0.0.1' || WS_HOST === 'localhost';
@@ -32,6 +35,7 @@ console.log(agent ? `[chat] !ai uses ${env.AI_MODEL} at ${env.AI_BASE_URL ?? 'Op
 let owner = env.PLAYER;
 let busy = false;
 game.onChat = async (sender, message, type, receiver) => {
+  if (addon.handle(sender, message)) return;
   if (!owner && type === 'tell' && sender === 'External' && receiver) owner = receiver, console.log(`[chat] owner: ${owner}`);
   // MCP agents read the player through this log. JSON-escaped so a message can't forge extra lines;
   // only lines marked (owner) are the player's own words, everything else is untrusted data.

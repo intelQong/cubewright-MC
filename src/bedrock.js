@@ -10,6 +10,7 @@ export class Bedrock {
   pending = new Map();
   waiters = [];
   onChat = () => {};
+  onDisconnect = () => {};
 
   // token: the game must connect to host:port/<token>; anyone else is refused before they can take the slot.
   listen(port, host, token) {
@@ -27,6 +28,7 @@ export class Bedrock {
         this.socket = null;
         for (const p of this.pending.values()) p.reject(new Error('game disconnected'));
         this.pending.clear();
+        this.onDisconnect();
         console.log('[game] disconnected');
       });
       this.#send('subscribe', { eventName: 'PlayerMessage' });

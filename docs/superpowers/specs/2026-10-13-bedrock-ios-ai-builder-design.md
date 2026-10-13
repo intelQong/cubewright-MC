@@ -68,9 +68,9 @@ Reply: the add-on runs `tellraw` with text `§8ic <id> <seq>/<total> <json-chunk
 - joins chunks by sequence, parses the JSON, resolves the request; 10 s timeout otherwise;
 - returns a clear error when the add-on never answers ("the IdealCraft add-on is not active in this world").
 
-Open question, settled by a test before implementation: whether `tellraw` to a selector that matches no
-player (`@a[tag=idealcraft_nobody]`) still emits a PlayerMessage event. If yes, replies are hidden from the
-player's chat. If no, replies are sent to the player as short grey lines (acceptable).
+Replies are visible: tested 2026-10-13, `tellraw` to a selector matching no player fails
+("No targets matched selector") and emits no event. The add-on therefore sends replies only to the
+requesting player, as short dark-grey (`§8`) lines, so other players never see them.
 
 ### Unit 3: add-on (`addon/`, new)
 

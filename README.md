@@ -26,7 +26,7 @@ Chat agent (`!ai`), any OpenAI-compatible API:
 | Ollama     | `http://localhost:11434/v1` (no key)                      |
 
 Agent CLIs over MCP at `http://127.0.0.1:8001/mcp`, e.g.
-`claude mcp add --transport http idealcraft http://127.0.0.1:8001/mcp`, then ask it to build.
+`claude mcp add --transport http cubewright http://127.0.0.1:8001/mcp`, then ask it to build.
 
 ## Settings
 
@@ -37,10 +37,10 @@ Agent CLIs over MCP at `http://127.0.0.1:8001/mcp`, e.g.
 
 ```sh
 sudo deploy/install.sh                 # once, and again after updates
-sudo systemctl start idealcraft-bridge # on
-sudo systemctl stop idealcraft-bridge  # off
-journalctl -u idealcraft-bridge -f     # log (player chat appears here)
+sudo systemctl start cubewright-bridge # on
+sudo systemctl stop cubewright-bridge  # off
+journalctl -u cubewright-bridge -f     # log (player chat appears here)
 ```
 
-Settings and API keys: `/etc/idealcraft.env` (root only). The service never starts at boot unless you `enable` it.
-The add-on: `npm run pack:addon` builds `dist/IdealCraft.mcpack`; import it on the phone and activate it in the world.
+Settings and API keys: `/etc/cubewright.env` (root only). The service never starts at boot unless you `enable` it.
+The add-on: `npm run pack:addon` builds `dist/Cubewright.mcpack`; import it on the phone and activate it in the world.

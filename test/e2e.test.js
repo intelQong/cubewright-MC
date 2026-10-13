@@ -25,7 +25,7 @@ function fakeGame(port, withAddon = true) {
     const details = JSON.stringify([{ dimension: 0, position: { x: 0.5, y: 66.62, z: 0.5 }, yRot: 180 }]);
     ws.send(JSON.stringify({ header: { requestId: header.requestId, messagePurpose: 'commandResponse' }, body: { statusCode: 0, details } }));
     if (!withAddon) return;
-    const m = /^scriptevent idealcraft:(\w+) (\w+) (.*)$/.exec(body.commandLine);
+    const m = /^scriptevent cubewright:(\w+) (\w+) (.*)$/.exec(body.commandLine);
     if (!m) return;
     const [, op, id, json] = m;
     const args = JSON.parse(json);

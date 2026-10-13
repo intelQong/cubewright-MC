@@ -31,7 +31,7 @@ export function serveMcp(tools, port, host) {
         return ok({
           protocolVersion: msg.params?.protocolVersion ?? '2025-06-18',
           capabilities: { tools: { listChanged: false } },
-          serverInfo: { name: 'idealcraft', version: '0.1.0' },
+          serverInfo: { name: 'cubewright', version: '0.1.0' },
         });
       case 'ping':
         return ok({});

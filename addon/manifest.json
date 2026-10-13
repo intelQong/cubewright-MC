@@ -1,14 +1,14 @@
 {
   "format_version": 2,
   "header": {
-    "name": "IdealCraft AI",
-    "description": "Lets the IdealCraft AI bridge see your world. Read only.",
+    "name": "Cubewright",
+    "description": "Lets the Cubewright bridge see your world. Read only.",
     "uuid": "c08a1df0-edb7-4070-ba01-728d500182ba",
-    "version": [0, 1, 1],
+    "version": [0, 2, 0],
     "min_engine_version": [1, 20, 80]
   },
   "modules": [
-    { "type": "script", "language": "javascript", "uuid": "c6fd79a8-a9fa-43d5-958e-9a19747fbf77", "version": [0, 1, 1], "entry": "scripts/main.js" }
+    { "type": "script", "language": "javascript", "uuid": "c6fd79a8-a9fa-43d5-958e-9a19747fbf77", "version": [0, 2, 0], "entry": "scripts/main.js" }
   ],
   "dependencies": [{ "module_name": "@minecraft/server", "version": "1.11.0" }]
 }

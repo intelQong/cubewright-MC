@@ -1,15 +1,15 @@
-# deploy/idealcraft-bridge.service
+# deploy/cubewright-bridge.service
 [Unit]
-Description=IdealCraft AI bridge (Minecraft Bedrock)
+Description=Cubewright bridge (Minecraft Bedrock)
 After=network-online.target wg-quick@wg0.service
 Wants=network-online.target
 
 [Service]
-User=idealcraft
-Group=idealcraft
-WorkingDirectory=/srv/idealcraft
-EnvironmentFile=/etc/idealcraft.env
-ExecStart=/srv/idealcraft/bin/node src/index.js
+User=cubewright
+Group=cubewright
+WorkingDirectory=/srv/cubewright
+EnvironmentFile=/etc/cubewright.env
+ExecStart=/srv/cubewright/bin/node src/index.js
 Restart=on-failure
 RestartSec=5
 ProtectHome=true

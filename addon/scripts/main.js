@@ -1,5 +1,5 @@
 // addon/scripts/main.js
-// Script API side: answers /scriptevent idealcraft:<op> <id> <json> with tellraw reply lines.
+// Script API side: answers /scriptevent cubewright:<op> <id> <json> with tellraw reply lines.
 import { system, world } from '@minecraft/server';
 import { toLines } from './protocol.js';
 import { inspect, heights } from './ops.js';
@@ -18,7 +18,7 @@ function info(player) {
 }
 
 system.afterEvents.scriptEventReceive.subscribe((e) => {
-  if (!e.id.startsWith('idealcraft:')) return;
+  if (!e.id.startsWith('cubewright:')) return;
   const [id, ...rest] = e.message.split(' ');
   if (!/^[0-9a-f]{8}$/.test(id)) return;
   const player = e.sourceEntity?.typeId === 'minecraft:player' ? e.sourceEntity : world.getPlayers()[0];
@@ -30,7 +30,7 @@ system.afterEvents.scriptEventReceive.subscribe((e) => {
     const dim = player.dimension;
     const view = { blockAt: (x, y, z) => { try { return dim.getBlock({ x, y, z })?.typeId; } catch { return undefined; } } };
     const feet = Math.floor(player.location.y);
-    const op = e.id.slice('idealcraft:'.length);
+    const op = e.id.slice('cubewright:'.length);
     if (op === 'info') payload = info(player);
     else if (op === 'inspect') payload = inspect(view, args);
     else if (op === 'heights') {
@@ -48,4 +48,4 @@ system.afterEvents.scriptEventReceive.subscribe((e) => {
   }
 });
 
-system.runTimeout(() => world.sendMessage('§8IdealCraft add-on ready'), 100);
+system.runTimeout(() => world.sendMessage('§8Cubewright add-on ready'), 100);

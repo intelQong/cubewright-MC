@@ -28,7 +28,7 @@ test('reply lines round-trip, chunked', () => {
 
 test('parseLine rejects anything that is not a reply line', () => {
   assert.equal(parseLine('hello'), null);
-  assert.equal(parseLine('§8ic short 1/1 {}'), null);
+  assert.equal(parseLine('§8cw short 1/1 {}'), null);
 });
 
 test('inspect counts blocks and marks unloaded ones', () => {

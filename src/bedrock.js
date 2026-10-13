@@ -32,7 +32,7 @@ export class Bedrock {
         console.log('[game] disconnected');
       });
       this.#send('subscribe', { eventName: 'PlayerMessage' });
-      this.say('§aIdealCraft AI connected. Type §e!ai <what to build>§a, §e!ai undo§a or §e!ai reset§a.');
+      this.say('§aCubewright connected. Type §e!ai <what to build>§a, §e!ai undo§a or §e!ai reset§a.');
     });
     return wss;
   }

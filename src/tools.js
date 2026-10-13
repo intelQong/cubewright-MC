@@ -126,7 +126,7 @@ export function makeTools(game, addon) {
         if (volume(b) > MAX_BUILD_VOLUME) throw new Error(`box is ${volume(b)} blocks; the limit is ${MAX_BUILD_VOLUME}`);
         if (!/^[a-z0-9_:]+(\s*\[.*\])?$/i.test(block.trim())) throw new Error(`not a block id: ${block}`);
 
-        const id = `idealcraft_${process.pid}_${++saves}`;
+        const id = `cubewright_${process.pid}_${++saves}`;
         const saved = tiles(b, 64, 64 * 384 * 64).map((t, i) => ({ name: `${id}_${i}`, at: t }));
         for (const s of saved) await game.run(`structure save ${s.name} ${coords(s.at)} false memory true`);
         undoStack.push({ saved, box: b });

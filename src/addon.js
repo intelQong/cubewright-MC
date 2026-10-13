@@ -1,5 +1,5 @@
 // src/addon.js
-// Request/response with the IdealCraft add-on: /scriptevent out, tellraw reply lines back.
+// Request/response with the Cubewright add-on: /scriptevent out, tellraw reply lines back.
 import { randomBytes } from 'node:crypto';
 import { parseLine } from '../addon/scripts/protocol.js';
 
@@ -21,14 +21,14 @@ export class AddonChannel {
     const reply = new Promise((resolve, reject) => {
       const timer = setTimeout(() => {
         this.pending.delete(id);
-        reject(new Error('the IdealCraft add-on did not answer: is it active in this world?'));
+        reject(new Error('the Cubewright add-on did not answer: is it active in this world?'));
       }, this.timeoutMs);
       this.pending.set(id, { parts: new Map(), resolve, reject, timer });
     });
     // The timer may fire while game.run is still awaited; without a handler that rejection would crash Node.
     reply.catch(() => {});
     try {
-      await this.game.run(`scriptevent idealcraft:${op} ${id} ${JSON.stringify(args)}`);
+      await this.game.run(`scriptevent cubewright:${op} ${id} ${JSON.stringify(args)}`);
     } catch (err) {
       this.#finish(id, null, err);
     }

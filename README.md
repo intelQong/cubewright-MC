@@ -1,4 +1,4 @@
-# IdealCraft AI
+# Cubewright-MC
 
 Any AI builds in your Minecraft Bedrock world. A small Node app ("the bridge") talks to the game over
 Bedrock's built-in `/connect` WebSocket, so nothing is installed in the game.

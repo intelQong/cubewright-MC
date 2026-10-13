@@ -44,14 +44,13 @@ Your phone and the computer must be on the **same Wi-Fi**. (Using a cloud server
 git clone https://github.com/intelQong/cubewright-MC
 cd cubewright-MC
 npm install
-npm run pack:addon
 ```
 
-This creates the add-on file `dist/Cubewright.mcpack`.
+This downloads Cubewright and what it needs.
 
 **On the phone**, install the add-on:
 
-1. Send `Cubewright.mcpack` to your phone (AirDrop, email, cloud drive...) and open it. Choose **Minecraft**.
+1. On your phone, download **Cubewright.mcpack** from the [latest release](https://github.com/intelQong/cubewright-MC/releases/latest) and open it. Choose **Minecraft**.
 2. In Minecraft, edit your world: turn **Cheats on**, then go to **Behavior Packs** and activate **Cubewright**.
 
 ## Play
@@ -214,7 +213,7 @@ VM's VPN address. The bridge is then reachable only from your own devices, with 
 
 ```sh
 npm test               # unit tests and an end-to-end test over a real WebSocket with a fake game
-npm run pack:addon     # build the add-on
+npm run pack:addon     # build the add-on (dist/Cubewright.mcpack); publish it with gh release create
 DEBUG=1 npm start      # log raw game traffic
 ```
 

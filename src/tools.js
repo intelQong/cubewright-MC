@@ -1,5 +1,7 @@
 // The tools an AI builds with. Same list is served over MCP and to the built-in chat agent.
 
+import { findSite } from './terrain.js';
+
 const MAX_BUILD_VOLUME = 1_000_000; // ponytail: flat cap; per-request budget if builds get bigger
 const MIN_Y = -64, MAX_Y = 319;
 
@@ -56,20 +58,57 @@ export function facing(yRot) {
 
 const point = { type: 'object', properties: { x: { type: 'integer' }, y: { type: 'integer' }, z: { type: 'integer' } }, required: ['x', 'y', 'z'] };
 
-export function makeTools(game) {
+export function makeTools(game, addon) {
   const undoStack = [];
   let saves = 0;
 
   return [
     {
       name: 'player_info',
-      description: 'Where the player is: position (feet), facing direction, dimension. Call it first; build relative to it. +x east, +z south, +y up.',
-      inputSchema: { type: 'object', properties: {} },
+      description:
+        'Where the player is: position (feet), facing, dimension, the block in the crosshair (looking_at), world height. ' +
+        'Call it first; build relative to it. +x east, +z south, +y up.',
       async run() {
-        const res = await game.run('querytarget @s');
-        const [p] = JSON.parse(res.details);
-        const pos = { x: Math.floor(p.position.x), y: Math.floor(p.position.y - 1.62), z: Math.floor(p.position.z) };
-        return { position: pos, facing: facing(p.yRot), dimension: ['overworld', 'nether', 'the_end'][p.dimension] ?? p.dimension, world_y_range: [MIN_Y, MAX_Y] };
+        try {
+          const p = await addon.request('info');
+          const pos = { x: Math.floor(p.position.x), y: Math.floor(p.position.y), z: Math.floor(p.position.z) };
+          return { position: pos, facing: facing(p.yRot), dimension: p.dimension.replace('minecraft:', ''), looking_at: p.looking_at, world_y_range: p.world_y_range };
+        } catch (err) {
+          const res = await game.run('querytarget @s');
+          const [p] = JSON.parse(res.details);
+          const pos = { x: Math.floor(p.position.x), y: Math.floor(p.position.y - 1.62), z: Math.floor(p.position.z) };
+          return { position: pos, facing: facing(p.yRot), dimension: ['overworld', 'nether', 'the_end'][p.dimension] ?? p.dimension, world_y_range: [MIN_Y, MAX_Y], note: `limited info: ${err.message}` };
+        }
+      },
+    },
+    {
+      name: 'inspect_area',
+      description:
+        'The exact blocks in a box (at most 32x32x32) as counts per block id. With layout=true also as layers of letters ' +
+        '(one layer per y, rows north to south, letters west to east) with a legend: use thin slices to check walls, roofs and stairs.',
+      inputSchema: { type: 'object', properties: { from: point, to: point, layout: { type: 'boolean' } }, required: ['from', 'to'] },
+      async run({ from, to, layout = false }) {
+        return addon.request('inspect', { from, to, layout });
+      },
+    },
+    {
+      name: 'survey_terrain',
+      description:
+        'Ground heights and surface blocks over an area (at most 64x64, x/z only), scanning 40 blocks above and below the player. ' +
+        'With site {width, depth}, also finds the flattest dry spot for that footprint: build with its x,z as the north-west corner and y as the first block above ground.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          from: { type: 'object', properties: { x: { type: 'integer' }, z: { type: 'integer' } }, required: ['x', 'z'] },
+          to: { type: 'object', properties: { x: { type: 'integer' }, z: { type: 'integer' } }, required: ['x', 'z'] },
+          site: { type: 'object', properties: { width: { type: 'integer' }, depth: { type: 'integer' } }, required: ['width', 'depth'] },
+        },
+        required: ['from', 'to'],
+      },
+      async run({ from, to, site }) {
+        const survey = await addon.request('heights', { from, to });
+        if (!site) return survey;
+        return { ...survey, site: findSite(survey, site.width, site.depth) ?? 'no dry, loaded spot that size in this area' };
       },
     },
     {

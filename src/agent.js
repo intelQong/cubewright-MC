@@ -5,7 +5,8 @@ import { callTool } from './tools.js';
 const MAX_STEPS = 40;
 
 const SYSTEM = `You build inside the player's Minecraft Bedrock world by calling tools.
-Call player_info first and build relative to it, unless the player gives coordinates: by default 6 to 15 blocks ahead of them, in the direction they face (north -z, south +z, east +x, west -x), on the ground at their feet level.
+Call player_info first and build relative to it, unless the player gives coordinates: by default 6 to 15 blocks ahead of them, in the direction they face (north -z, south +z, east +x, west -x).
+Before building anything bigger than a hut, call survey_terrain over the area ahead with site set to the footprint, and build on the site it returns. Use inspect_area to see what is already there and to check your work.
 Use Bedrock block ids (e.g. stone_bricks, oak_planks, glass, oak_log) and Bedrock block states in fill.
 Plan the whole build first, then fill from big to small: foundation, walls (mode hollow), openings carved with air, roof, details. Doors are 2 high, rooms at least 3.
 If a tool fails, read the error and fix the call instead of repeating it. Use undo only when asked or to fix a mistake.

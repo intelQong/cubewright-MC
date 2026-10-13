@@ -2,19 +2,103 @@
 
 **Type a sentence in Minecraft chat. An AI builds it in front of you.**
 
-Cubewright is an AI builder for **Minecraft: Bedrock Edition**, including **iPhone**, in your own single-player world.
-It works with **any AI**: any OpenAI-compatible API (OpenRouter, OpenAI, Anthropic, Gemini, Groq, Ollama...)
-or any agent that speaks MCP (Claude Code, Codex, OpenCode, Gemini CLI...).
-
 ```
 !ai build a small cottage with a garden
-!ai undo
 ```
 
-Nothing to install on the phone except one small add-on. The AI runs on a computer you control
-(a home PC or a small cloud VM), and the game connects to it with Bedrock's built-in `/connect` command.
+Cubewright works in **Minecraft: Bedrock Edition**, including on **iPhone**, in your own world.
+You can use almost any AI, including free ones.
 
 > Not an official Minecraft product. Not approved by or associated with Mojang or Microsoft.
+
+---
+
+# For players
+
+## What you need
+
+1. **Minecraft Bedrock** (iPhone, iPad, Android, Windows or console with a keyboard).
+2. **A computer that stays on while you play.** It runs the small Cubewright program (the "bridge").
+   A home PC or Mac works, or a cheap cloud server. It needs [Node.js](https://nodejs.org) and [Git](https://git-scm.com) installed.
+3. **An AI key.** The easiest free option: create an account on [OpenRouter](https://openrouter.ai),
+   then *Keys → Create key*. Copy the key (it starts with `sk-or-`).
+
+Your phone and the computer must be on the **same Wi-Fi**. (Using a cloud server instead? See *Running on a Linux server* in the developer section.)
+
+## Set it up (once, about 10 minutes)
+
+**On the computer**, open a terminal and paste these lines one by one:
+
+```sh
+git clone https://github.com/intelQong/cubewright-MC
+cd cubewright-MC
+npm install
+npm run pack:addon
+```
+
+This creates the add-on file `dist/Cubewright.mcpack`.
+
+**On the phone**, install the add-on:
+
+1. Send `Cubewright.mcpack` to your phone (AirDrop, email, cloud drive...) and open it. Choose **Minecraft**.
+2. In Minecraft, edit your world: turn **Cheats on**, then go to **Behavior Packs** and activate **Cubewright**.
+
+## Play
+
+**1. Start Cubewright on the computer.** Replace the two parts in capitals, then paste:
+
+```sh
+WS_HOST=0.0.0.0 BRIDGE_TOKEN=MYSECRET123 \
+AI_BASE_URL=https://openrouter.ai/api/v1 AI_API_KEY=YOUR-OPENROUTER-KEY \
+AI_MODEL=nvidia/nemotron-3-super-120b-a12b:free npm start
+```
+
+`MYSECRET123` is a password you make up (at least 8 characters). Keep the window open while you play.
+On Windows, paste the commands into **Git Bash** (installed with Git), not Command Prompt.
+
+**2. Join your world on the phone.** You will see *Cubewright add-on ready*.
+
+**3. Connect.** Type this in chat, using your computer's address (on a Mac: *System Settings → Wi-Fi → Details*;
+on Windows: `ipconfig`) and your password:
+
+```
+/connect 192.168.1.20:8000/MYSECRET123
+```
+
+You will see *Cubewright connected*.
+
+**4. Build!**
+
+| Type in chat | What happens |
+|---|---|
+| `!ai build a stone tower` | The AI builds it in front of you |
+| `!ai make it taller` | It remembers what you asked before |
+| `!ai undo` | Puts back exactly what was there before the last build step |
+| `!ai reset` | Starts a fresh conversation |
+
+## Good to know
+
+- **Switching apps disconnects the game** (on iPhone). When you come back, type the `/connect` line again.
+- **Free AI models can be slow or busy.** If nothing happens, wait a minute and try again.
+- **Only you can use `!ai`**, even if friends join your world.
+- **Back up worlds you care about.** Builds can be undone, but other commands the AI runs (like changing the time) cannot.
+- **Keep your AI key private.** Never post it in chats or screenshots.
+
+## Something not working?
+
+| Problem | Fix |
+|---|---|
+| `/connect` says it could not connect | Check the address and password, that the computer program is running, and that both are on the same Wi-Fi |
+| No *Cubewright add-on ready* message | The add-on isn't active: edit the world → Behavior Packs → activate Cubewright |
+| `!ai` says *No AI_MODEL set* | Start the bridge with the `AI_MODEL`, `AI_BASE_URL` and `AI_API_KEY` settings (step 1) |
+| The AI builds in strange places | Stand on open ground, look where you want the build, and ask again |
+
+---
+
+# For developers
+
+Everything below is the technical reference: architecture, every setting, MCP agents, the sandboxed service,
+security and development.
 
 ## How it works
 
@@ -36,53 +120,6 @@ Nothing to install on the phone except one small add-on. The AI runs on a comput
 - **The add-on** lets the AI *see*: block contents of an area, ground heights, the block in your crosshair.
   It is read only; all building goes through normal commands.
 - **Undo** saves each area with `/structure` before building over it, so `!ai undo` puts back exactly what was there.
-
-## Requirements
-
-- Minecraft: Bedrock Edition with **cheats enabled** in the world (needed for `/connect` and the build commands).
-- A machine for the bridge with **Node.js 20+**. Linux, macOS or Windows; it uses about 80 MB of RAM.
-- An AI: an API key for an OpenAI-compatible provider (free options exist, see below), or an MCP agent.
-- The phone must be able to reach the bridge: same Wi-Fi, or a VPN such as WireGuard for a cloud VM.
-
-## Quick start
-
-```sh
-git clone https://github.com/intelQong/cubewright-MC && cd cubewright-MC
-npm install
-npm run pack:addon            # builds dist/Cubewright.mcpack
-```
-
-1. **Install the add-on.** Send `dist/Cubewright.mcpack` to your phone, open it, and share it to Minecraft.
-   Then edit your world → *Behavior Packs* → activate **Cubewright**. When you join you will see
-   `Cubewright add-on ready`.
-2. **Start the bridge** with an AI and a token (any secret string, 8 characters or more):
-
-   ```sh
-   WS_HOST=0.0.0.0 BRIDGE_TOKEN=pick-a-secret \
-   AI_BASE_URL=https://openrouter.ai/api/v1 AI_API_KEY=sk-or-... \
-   AI_MODEL=nvidia/nemotron-3-super-120b-a12b:free \
-   npm start
-   ```
-
-3. **Connect from the game** (replace the address with your bridge machine's):
-
-   ```
-   /connect 192.168.1.20:8000/pick-a-secret
-   ```
-
-   You will see `Cubewright connected`.
-4. **Build:** `!ai build a small stone tower`.
-
-## Chat commands
-
-| Command | What it does |
-|---|---|
-| `!ai <request>` | The AI builds or answers. It remembers the conversation, so `!ai make it taller` works. |
-| `!ai undo` | Restores the blocks from before the last fill. Repeat to go further back. |
-| `!ai reset` | Forgets the conversation. |
-
-Only the player who ran `/connect` can use `!ai` (or the player named in `PLAYER`), so other players on
-the same world cannot spend your AI credits.
 
 ## Choosing an AI
 

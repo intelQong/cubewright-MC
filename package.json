@@ -6,7 +6,8 @@
   "description": "AI builder for Minecraft Bedrock: any MCP agent or OpenAI-compatible model builds in your world",
   "scripts": {
     "start": "node src/index.js",
-    "test": "node --test"
+    "test": "node --test",
+    "pack:addon": "sh scripts/pack-addon.sh"
   },
   "engines": {
     "node": ">=20"
